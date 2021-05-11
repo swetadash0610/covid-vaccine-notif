@@ -1,10 +1,10 @@
-import time
+from flask import Flask
+from apscheduler.schedulers.background import BackgroundScheduler
 from cowin_api import CoWinAPI
 import os
 from twilio.rest import Client
 from dotenv import load_dotenv
 
-starttime = time.time()
 load_dotenv()
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
@@ -28,7 +28,8 @@ message = client.messages.create(
     to=to
 )
 
-while True:
+def notify():
+    print("called") 
     for value in available_centers:
         for session in value['sessions']:
             body = str(value['name'])+" Date: "+str(session['date']) + \
@@ -39,4 +40,12 @@ while True:
                     from_=from_,
                     to=to
                 )
-    time.sleep(30)
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(notify, 'interval', minutes=0)
+sched.start()
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "COVID VACCINE NOTIFIER!"
