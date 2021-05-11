@@ -48,4 +48,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "COVID VACCINE NOTIFIER!"
+    return "COVID VACCINE NOTIFIER! You will receive a message on your registered number"
+
+if __name__ == '__main__':
+    # Threaded option to enable multiple instances for multiple user access support
+    app.run(threaded=True, port=5000)
